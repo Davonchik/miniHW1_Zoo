@@ -3,6 +3,7 @@ using miniHW_1_AslanyanDG.Services;
 using miniHW_1_AslanyanDG.Models.Animals;
 using miniHW_1_AslanyanDG.Models.Animals.Herboes;
 using miniHW_1_AslanyanDG.Models.Animals.Predators;
+using miniHW_1_AslanyanDG.Models.Inventory;
 
 namespace miniHW_1_AslanyanDG.Tests;
 
@@ -33,6 +34,8 @@ public class UnitTestZoo
             // Assert
             Assert.Contains(animal, allAnimals);
         }
+        
+        
 
         // [Fact]
         // public void AnimalAlreadyExists_Message()
@@ -40,36 +43,65 @@ public class UnitTestZoo
         //     // Arrange
         //     IVeterinaryClinic clinic = new VeterinaryClinic();
         //     IZoo zoo = new Zoo(clinic);
-        //     var animal = new TestAnimal("Rab", 3, 10, 505); // Должно пройти проверку здоровья
+        //
+        //     var animal1 = new Wolf("wolf1", 5, 8, 777);
+        //     var animal2 = new Wolf("wolf2", 4, 8, 777);
         //
         //     using (var sw = new StringWriter())
         //     {
-        //         var originalConsoleOut = Console.Out;
+        //         var origOut = Console.Out;
         //         try
         //         {
         //             Console.SetOut(sw);
         //
-        //             zoo.AddAnimal(animal); // Первый вызов - должно добавиться
-        //             zoo.AddAnimal(animal); // Второй вызов - должно напечатать "уже в зоопарке"
-        //
-        //             Console.Out.Flush();
-        //
-        //             string consoleOutput = sw.ToString();
-        //             
-        //             // DEBUG: Вывести реальный вывод консоли
-        //             if (string.IsNullOrWhiteSpace(consoleOutput))
-        //             {
-        //                 throw new Exception("ОШИБКА: Вывод в консоль пуст, возможно, Console.WriteLine() не вызывается!");
-        //             }
-        //             
-        //             Assert.Contains($"Животное с номером {animal.Number} уже в зоопарке!", consoleOutput);
+        //             zoo.AddAnimal(animal1);
+        //             zoo.AddAnimal(animal2);
         //         }
         //         finally
         //         {
-        //             Console.SetOut(originalConsoleOut);
+        //             Console.SetOut(origOut);
         //         }
+        //
+        //         var output = sw.ToString();
+        //         
+        //         Assert.Contains("Wolf 1 was successfully added", output);
+        //         var allAnimals = zoo.GetAnimals();
+        //         Assert.Single(allAnimals);
+        //         Assert.Contains(animal1, allAnimals);
         //     }
         // }
+
+        [Fact]
+        public void ShowInventory_ShouldListAnimalsAndThings()
+        {
+            IVeterinaryClinic clinic = new VeterinaryClinic();
+            IZoo zoo = new Zoo(clinic);
+
+            var tiger = new Tiger("tig", 10, 9, 100);
+            zoo.AddAnimal(tiger);
+            
+            var rabbit = new Rabbit("rab", 5, 8, 777, 10);
+            zoo.AddAnimal(rabbit);
+
+            var table = new Thing(8, "tableB");
+            zoo.AddInventoryItem(table);
+
+            using (var sw = new StringWriter())
+            {
+                var origOut = Console.Out;
+                Console.SetOut(sw);
+                
+                zoo.ShowInventory();
+                
+                Console.SetOut(origOut);
+                var output = sw.ToString();
+                
+                
+                Assert.Contains("tableB", output);
+                Assert.Contains("tig", output);
+                Assert.Contains("rab", output);
+            }
+        }
 
         [Fact]
         public void AddUnhealthyAnimal_ShouldNotBeAccepted()
@@ -126,6 +158,33 @@ public class UnitTestZoo
             Assert.Contains(rabbit, contactAnimals);
             Assert.Contains(monkey, contactAnimals);
             Assert.DoesNotContain(tiger, contactAnimals);
+        }
+
+        [Fact]
+        public void AddAnimal_ZeroHealth_ShouldNotAdd()
+        {
+            IVeterinaryClinic clinic = new VeterinaryClinic();
+            IZoo zoo = new Zoo(clinic);
+
+            var wolf = new Wolf("weakWolf", 40, 0, 606);
+            zoo.AddAnimal(wolf);
+            
+            Assert.DoesNotContain(wolf, zoo.GetAnimals());
+        }
+
+        [Fact]
+        public void EmptyZoo_ShouldHaveZeroFoodAndNoAnimals()
+        {
+            IVeterinaryClinic clinic = new VeterinaryClinic();
+            IZoo zoo = new Zoo(clinic);
+            
+            var allAnimals = zoo.GetAnimals();
+            var totalFood = zoo.GetTotalFoodRequirement();
+            var contactAnimals = zoo.GetContactZooAnimals();
+            
+            Assert.Empty(allAnimals);
+            Assert.Equal((uint)0, totalFood);
+            Assert.Empty(contactAnimals);
         }
     }
 }

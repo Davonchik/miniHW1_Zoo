@@ -4,6 +4,8 @@ using Xunit;
 using miniHW_1_AslanyanDG.Services.Interfaces;
 using miniHW_1_AslanyanDG.Services;
 using miniHW_1_AslanyanDG.Models.Animals;
+using miniHW_1_AslanyanDG.Models.Animals.Herboes;
+using miniHW_1_AslanyanDG.Models.Animals.Predators;
 
 namespace miniHW_1_AslanyanDG.Tests
 {
@@ -97,6 +99,71 @@ namespace miniHW_1_AslanyanDG.Tests
 
             // Assert
             Assert.True(result, "Животное с ровно 5 здоровья тоже считается здоровым (≥5)");
+        }
+
+        [Theory]
+        [InlineData(0, false)]
+        [InlineData(4, false)]
+        [InlineData(5, true)]
+        [InlineData(10, true)]
+        public void CheckAimal_ReternsExpected_WhenDifferentHealth(int health, bool expected)
+        {
+            var clinic = new VeterinaryClinic();
+            var wolf = new Wolf("TestWolf", 3, (uint)health, 500);
+            
+            var result = clinic.CheckAnimal(wolf);
+            
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void CheckAnimal_MonkeyWithHealth10_ReturnsTrue()
+        {
+            IVeterinaryClinic clinic = new VeterinaryClinic();
+            var monkey = new Monkey("Strong monkey", 5, 10, 900, 5);
+            
+            bool result;
+            using (var sw = new StringWriter())
+            {
+                var originalConsoleOut = Console.Out;
+                try
+                {
+                    Console.SetOut(sw);
+                    result = clinic.CheckAnimal(monkey);
+                }
+                finally
+                {
+                    Console.SetOut(originalConsoleOut);
+                }
+            }
+
+            // Assert
+            Assert.True(result, "Животное с ровно 5 здоровья тоже считается здоровым (≥5)");
+        }
+        
+        [Fact]
+        public void CheckAnimal_WolfWithHealth0_ReturnsFalse()
+        {
+            IVeterinaryClinic clinic = new VeterinaryClinic();
+            var wolf = new Wolf("Strong wolf", 1, 0, 901);
+            
+            bool result;
+            using (var sw = new StringWriter())
+            {
+                var originalConsoleOut = Console.Out;
+                try
+                {
+                    Console.SetOut(sw);
+                    result = clinic.CheckAnimal(wolf);
+                }
+                finally
+                {
+                    Console.SetOut(originalConsoleOut);
+                }
+            }
+
+            // Assert
+            Assert.False(result, "Животное с уровнем здоровья 0 не здоровое");
         }
     }
 }
