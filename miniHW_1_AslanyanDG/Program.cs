@@ -10,11 +10,18 @@ using miniHW_1_AslanyanDG.Models.Inventory;
 
 namespace miniHW_1_AslanyanDG;
 
+/// <summary>
+/// The main program.
+/// </summary>
 public class Program
 {
+    /// <summary>
+    /// Main.
+    /// </summary>
+    /// <param name="args">Arguments.</param>
     public static void Main(string[] args)
     {
-        // Настройка DI-контейнера
+        // DI-container customization.
         var serviceProvider = new ServiceCollection()
             .AddScoped<IVeterinaryClinic, VeterinaryClinic>()
             .AddScoped<IZoo, Zoo>()
@@ -22,6 +29,7 @@ public class Program
 
         var zoo = serviceProvider.GetService<IZoo>();
 
+        // Menu.
         var exit = false;
         while (!exit)
         {
@@ -62,10 +70,16 @@ public class Program
         }
     }
 
+    /// <summary>
+    /// The add inventory client logic.
+    /// </summary>
+    /// <param name="zoo">Zoo.</param>
+    /// <exception cref="FormatException">To catch wrong argument's formats.</exception>
     public static void AddInventoryMenu(IZoo zoo)
     {
         try
         {
+            // Thing menu.
             Console.WriteLine("\nВыберите предмет:");
             Console.WriteLine("1. Стол");
             Console.WriteLine("2. Компьютер");
@@ -106,11 +120,16 @@ public class Program
         }
     }
 
-    // Меню для добавления нового животного
+    /// <summary>
+    /// The animal addition client logic.
+    /// </summary>
+    /// <param name="zoo">Zoo.</param>
+    /// <exception cref="FormatException">To catch wrong argument's formats.</exception>
     public static void AddAnimalMenu(IZoo zoo)
     {
         try
         {
+            // The animal menu.
             Console.WriteLine("\nВыберите тип животного:");
             Console.WriteLine("1. Кролик");
             Console.WriteLine("2. Тигр");
@@ -186,6 +205,10 @@ public class Program
         }
     }
     
+    /// <summary>
+    /// The showing summary animals info method.
+    /// </summary>
+    /// <param name="zoo">Zoo.</param>
     public static void ShowSummary(IZoo zoo)
     {
         try
@@ -205,7 +228,10 @@ public class Program
         }
     }
 
-    // Вывод животных, пригодных для контактного зоопарка
+    /// <summary>
+    /// The showing contact zoo animals info method.
+    /// </summary>
+    /// <param name="zoo">Zoo.</param>
     public static void ShowContactAnimals(IZoo zoo)
     {
         try
