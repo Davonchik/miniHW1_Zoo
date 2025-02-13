@@ -9,7 +9,6 @@ using miniHW_1_AslanyanDG.Models.Animals.Predators;
 
 namespace miniHW_1_AslanyanDG.Tests
 {
-    // Тестовый класс-наследник, так как Animal – абстрактный
     public class TestAnimal : Animal
     {
         public TestAnimal(string name, uint food, uint health, uint number) 
@@ -106,7 +105,7 @@ namespace miniHW_1_AslanyanDG.Tests
         [InlineData(4, false)]
         [InlineData(5, true)]
         [InlineData(10, true)]
-        public void CheckAimal_ReternsExpected_WhenDifferentHealth(int health, bool expected)
+        public void CheckAnimal_ReturnsExpected_WhenDifferentHealth(int health, bool expected)
         {
             var clinic = new VeterinaryClinic();
             var wolf = new Wolf("TestWolf", 3, (uint)health, 500);
@@ -119,9 +118,11 @@ namespace miniHW_1_AslanyanDG.Tests
         [Fact]
         public void CheckAnimal_MonkeyWithHealth10_ReturnsTrue()
         {
+            // Arrange
             IVeterinaryClinic clinic = new VeterinaryClinic();
             var monkey = new Monkey("Strong monkey", 5, 10, 900, 5);
             
+            // Act
             bool result;
             using (var sw = new StringWriter())
             {
@@ -144,9 +145,11 @@ namespace miniHW_1_AslanyanDG.Tests
         [Fact]
         public void CheckAnimal_WolfWithHealth0_ReturnsFalse()
         {
+            // Arrange
             IVeterinaryClinic clinic = new VeterinaryClinic();
             var wolf = new Wolf("Strong wolf", 1, 0, 901);
             
+            // Act
             bool result;
             using (var sw = new StringWriter())
             {

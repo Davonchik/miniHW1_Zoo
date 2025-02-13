@@ -27,5 +27,9 @@ public class Thing : IInventory
     {
         Number = number;
         Name = name;
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentNullException(nameof(name), "Вы не задали имя для вещи!");
+        }
     }
 }

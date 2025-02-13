@@ -20,6 +20,24 @@ public class UnitTestZoo
     public class ZooTests
     {
         [Fact]
+        public void AddAnimalWithSameNumber_ShouldShowLengthAnimalListEqual1()
+        {
+            // Arrange
+            IVeterinaryClinic clinic = new VeterinaryClinic();
+            IZoo zoo = new Zoo(clinic);
+            var animal1 = new TestAnimal("Rab", 3, 7, 505);
+            var animal2 = new TestAnimal("Monkey", 6, 6, 505);
+            
+            // Act
+            zoo.AddAnimal(animal1);
+            zoo.AddAnimal(animal2);
+            var animalsList = zoo.GetAnimals();
+            
+            // Assert
+            Assert.Single(animalsList);
+        }
+        
+        [Fact]
         public void AddAnimal_Success()
         {
             // Arrange
@@ -34,58 +52,23 @@ public class UnitTestZoo
             // Assert
             Assert.Contains(animal, allAnimals);
         }
-        
-        
-
-        // [Fact]
-        // public void AnimalAlreadyExists_Message()
-        // {
-        //     // Arrange
-        //     IVeterinaryClinic clinic = new VeterinaryClinic();
-        //     IZoo zoo = new Zoo(clinic);
-        //
-        //     var animal1 = new Wolf("wolf1", 5, 8, 777);
-        //     var animal2 = new Wolf("wolf2", 4, 8, 777);
-        //
-        //     using (var sw = new StringWriter())
-        //     {
-        //         var origOut = Console.Out;
-        //         try
-        //         {
-        //             Console.SetOut(sw);
-        //
-        //             zoo.AddAnimal(animal1);
-        //             zoo.AddAnimal(animal2);
-        //         }
-        //         finally
-        //         {
-        //             Console.SetOut(origOut);
-        //         }
-        //
-        //         var output = sw.ToString();
-        //         
-        //         Assert.Contains("Wolf 1 was successfully added", output);
-        //         var allAnimals = zoo.GetAnimals();
-        //         Assert.Single(allAnimals);
-        //         Assert.Contains(animal1, allAnimals);
-        //     }
-        // }
 
         [Fact]
         public void ShowInventory_ShouldListAnimalsAndThings()
         {
+            // Arrange
             IVeterinaryClinic clinic = new VeterinaryClinic();
             IZoo zoo = new Zoo(clinic);
-
             var tiger = new Tiger("tig", 10, 9, 100);
-            zoo.AddAnimal(tiger);
-            
             var rabbit = new Rabbit("rab", 5, 8, 777, 10);
-            zoo.AddAnimal(rabbit);
-
             var table = new Thing(8, "tableB");
+            
+            // Act
+            zoo.AddAnimal(tiger);
+            zoo.AddAnimal(rabbit);
             zoo.AddInventoryThing(table);
 
+            // Assert
             using (var sw = new StringWriter())
             {
                 var origOut = Console.Out;
@@ -118,19 +101,67 @@ public class UnitTestZoo
         }
 
         [Fact]
+        public void CreateHerboWithInvalidKindness_ShouldThrowException()
+        {
+            // Arrange && Act && Assert
+            Assert.Throws<ArgumentException>(() => new Rabbit("Rab", 3, 7, 505, 11));
+        }
+
+        [Fact]
+        public void CreateThingWithEmptyName_ShouldThrowArgumentNullException()
+        {
+            // Arrange
+            uint number = 1;
+            string invalidName = "";
+            
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => new Thing(number, invalidName));
+        }
+        
+        [Fact]
+        public void CreateAnimalWithEmptyName_ShouldThrowArgumentNullException()
+        {
+            // Arrange
+            string invalidName = "";
+            uint food = 10;
+            uint health = 100;
+            uint number = 1;
+
+            // Act & Assert
+            Assert.Throws<ArgumentNullException>(() => new TestAnimal(invalidName, food, health, number));
+        }
+        
+        [Fact]
+        public void ToString_ShouldReturnCorrectFormat()
+        {
+            // Arrange
+            string name = "Bars";
+            uint food = 20;
+            uint health = 100;
+            uint number = 101;
+            var animal = new TestAnimal(name, food, health, number);
+
+            // Act
+            string result = animal.ToString();
+
+            // Assert
+            Assert.Equal("Bars (ID: 101) (Health: 100)", result);
+        }
+
+        [Fact]
         public void AddUnhealthyAnimal_ShouldNotBeAccepted()
         {
             // Arrange
             IVeterinaryClinic clinic = new VeterinaryClinic();
             IZoo zoo = new Zoo(clinic);
-            var sickAnimal = new TestAnimal("Больной тигр", 10, 3, 606); // Health < 5
+            var sickAnimal = new TestAnimal("Больной тигр", 10, 3, 606);
             
             // Act
             zoo.AddAnimal(sickAnimal);
             var allAnimals = zoo.GetAnimals();
 
             // Assert
-            Assert.DoesNotContain(sickAnimal, allAnimals); // Больное животное не должно попасть в зоопарк
+            Assert.DoesNotContain(sickAnimal, allAnimals);
         }
 
         [Fact]
@@ -147,7 +178,7 @@ public class UnitTestZoo
             var totalFood = zoo.GetTotalFoodRequirement();
 
             // Assert
-            Assert.Equal(20u, totalFood); // 10 + 7 + 3 = 20
+            Assert.Equal(20u, totalFood);
         }
 
         [Fact]
@@ -156,9 +187,9 @@ public class UnitTestZoo
             // Arrange
             IVeterinaryClinic clinic = new VeterinaryClinic();
             IZoo zoo = new Zoo(clinic);
-            var rabbit = new Rabbit("Дружелюбный кролик", 3, 10, 100, 7); // Доброта > 5
-            var monkey = new Monkey("Обезьяна", 4, 10, 101, 6); // Доброта > 5
-            var tiger = new Tiger("Тигр", 12, 10, 102); // Хищник, не попадает
+            var rabbit = new Rabbit("Дружелюбный кролик", 3, 10, 100, 7);
+            var monkey = new Monkey("Обезьяна", 4, 10, 101, 6);
+            var tiger = new Tiger("Тигр", 12, 10, 102);
 
             zoo.AddAnimal(rabbit);
             zoo.AddAnimal(monkey);
@@ -168,7 +199,7 @@ public class UnitTestZoo
             var contactAnimals = zoo.GetContactZooAnimals();
 
             // Assert
-            Assert.Equal(2, contactAnimals.Count()); // Только rabbit и monkey подходят
+            Assert.Equal(2, contactAnimals.Count());
             Assert.Contains(rabbit, contactAnimals);
             Assert.Contains(monkey, contactAnimals);
             Assert.DoesNotContain(tiger, contactAnimals);
@@ -177,25 +208,31 @@ public class UnitTestZoo
         [Fact]
         public void AddAnimal_ZeroHealth_ShouldNotAdd()
         {
+            // Arrange
             IVeterinaryClinic clinic = new VeterinaryClinic();
             IZoo zoo = new Zoo(clinic);
 
+            // Act
             var wolf = new Wolf("weakWolf", 40, 0, 606);
             zoo.AddAnimal(wolf);
             
+            // Assert
             Assert.DoesNotContain(wolf, zoo.GetAnimals());
         }
 
         [Fact]
         public void EmptyZoo_ShouldHaveZeroFoodAndNoAnimals()
         {
+            // Arrange
             IVeterinaryClinic clinic = new VeterinaryClinic();
             IZoo zoo = new Zoo(clinic);
             
+            // Act
             var allAnimals = zoo.GetAnimals();
             var totalFood = zoo.GetTotalFoodRequirement();
             var contactAnimals = zoo.GetContactZooAnimals();
             
+            // Assert
             Assert.Empty(allAnimals);
             Assert.Equal((uint)0, totalFood);
             Assert.Empty(contactAnimals);

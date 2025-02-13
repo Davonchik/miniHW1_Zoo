@@ -89,7 +89,7 @@ public class Program
             Console.Write("Введите номер предмета: ");
             if (!uint.TryParse(Console.ReadLine(), out var num))
             {
-                throw new FormatException("Животному был присвоен некорректный номер!");
+                throw new FormatException("Вещи был присвоен некорректный номер!");
             }
             
             Console.WriteLine("Введите название предмета: ");
