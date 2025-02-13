@@ -22,7 +22,8 @@ public class Zoo(IVeterinaryClinic vetClinic) : IZoo
     /// <param name="animal">Animal.</param>
     public void AddAnimal(Animal animal)
     {
-        if (_animals.Any(a => a.Number == animal.Number))
+        if (_animals.Any(a => a.Number == animal.Number) || 
+            _inventoryItems.Any(a => a.Number == animal.Number))
         {
             Console.WriteLine($"Животное с номером {animal.Number} уже в зоопарке!");
             return;
