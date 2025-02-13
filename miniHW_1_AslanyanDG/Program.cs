@@ -1,9 +1,11 @@
 ﻿using miniHW_1_AslanyanDG.Services;
 using miniHW_1_AslanyanDG.Services.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using miniHW_1_AslanyanDG.Abstractions;
 using miniHW_1_AslanyanDG.Models.Animals;
 using miniHW_1_AslanyanDG.Models.Animals.Herboes;
 using miniHW_1_AslanyanDG.Models.Animals.Predators;
+using miniHW_1_AslanyanDG.Models.Inventory;
 
 
 namespace miniHW_1_AslanyanDG;
@@ -28,25 +30,29 @@ public class Program
             Console.WriteLine("2. Показать список животных и общее потребление еды");
             Console.WriteLine("3. Показать животных для контактного зоопарка");
             Console.WriteLine("4. Показать инвентаризационные объекты");
-            Console.WriteLine("5. Выход");
+            Console.WriteLine("5. Добавить новый предмет");
+            Console.WriteLine("6. Выход");
             Console.Write("Ваш выбор: ");
             var choice = Console.ReadLine();
 
             switch (choice)
             {
                 case "1":
-                    AddAnimalMenu(zoo);
+                    AddAnimalMenu(zoo!);
                     break;
                 case "2":
-                    ShowSummary(zoo);
+                    ShowSummary(zoo!);
                     break;
                 case "3":
-                    ShowContactAnimals(zoo);
+                    ShowContactAnimals(zoo!);
                     break;
                 case "4":
                     zoo.ShowInventory();
                     break;
                 case "5":
+                    AddInventoryMenu(zoo!);
+                    break;
+                case "6":
                     exit = true;
                     break;
                 default:
@@ -56,8 +62,52 @@ public class Program
         }
     }
 
+    public static void AddInventoryMenu(IZoo zoo)
+    {
+        try
+        {
+            Console.WriteLine("\nВыберите предмет:");
+            Console.WriteLine("1. Стол");
+            Console.WriteLine("2. Компьютер");
+            Console.WriteLine("Ваш выбор: ");
+            var typeChoice = Console.ReadLine();
+            
+            Console.Write("Введите номер предмета: ");
+            if (!uint.TryParse(Console.ReadLine(), out var num))
+            {
+                throw new FormatException("Животному был присвоен некорректный номер!");
+            }
+            
+            Console.WriteLine("Введите название предмета: ");
+            var name = Console.ReadLine();
+
+            Thing thing = null;
+            switch (typeChoice)
+            {
+                case "1":
+                    thing = new Table(num, name);
+                    break;
+                case "2":
+                    thing = new Computer(num, name);
+                    break;
+                default:
+                    Console.WriteLine("Неверный выбор предмета.");
+                    break;
+            }
+
+            if (thing != null)
+            {
+                zoo.AddInventoryThing(thing);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
     // Меню для добавления нового животного
-    static void AddAnimalMenu(IZoo zoo)
+    public static void AddAnimalMenu(IZoo zoo)
     {
         try
         {
@@ -101,7 +151,10 @@ public class Program
             {
                 case "1":   // Кролик – травоядное животное
                     Console.Write("Введите уровень доброты: ");
-                    var kindnessRabbit = uint.Parse(Console.ReadLine());
+                    if (!uint.TryParse(Console.ReadLine(), out var kindnessRabbit))
+                    {
+                        throw new FormatException("Был введен некорректный уровень доброты!");
+                    }
                     animal = new Rabbit(name, food, health, num, kindnessRabbit);
                     break;
                 case "2":   // Тигр – хищное животное
@@ -112,7 +165,10 @@ public class Program
                     break;
                 case "4":   // Обезьяна – травоядное животное для контактного зоопарка
                     Console.Write("Введите уровень доброты: ");
-                    var kindnessMonkey = uint.Parse(Console.ReadLine());
+                    if (!uint.TryParse(Console.ReadLine(), out var kindnessMonkey))
+                    {
+                        throw new FormatException("Был введен некорректный уровень доброты!");
+                    }
                     animal = new Monkey(name, food, health, num, kindnessMonkey);
                     break;
                 default:
@@ -130,7 +186,7 @@ public class Program
         }
     }
     
-    static void ShowSummary(IZoo zoo)
+    public static void ShowSummary(IZoo zoo)
     {
         try
         {
@@ -150,7 +206,7 @@ public class Program
     }
 
     // Вывод животных, пригодных для контактного зоопарка
-    static void ShowContactAnimals(IZoo zoo)
+    public static void ShowContactAnimals(IZoo zoo)
     {
         try
         {

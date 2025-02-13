@@ -10,6 +10,10 @@ public abstract class Animal : IAlive, IInventory
     public uint Health { get; protected set; }
     
     public uint Number { get; }
+    public virtual void ShowInventoryInfo()
+    {
+        Console.WriteLine($"Животное: {Name}, инвентарный номер: {Number}");
+    }
 
     public Animal(string name, uint food, uint health, uint number)
     {

@@ -6,20 +6,14 @@ using miniHW_1_AslanyanDG.Abstractions;
 
 namespace miniHW_1_AslanyanDG.Services;
 
-public class Zoo : IZoo
+public class Zoo(IVeterinaryClinic vetClinic) : IZoo
 {
-    private readonly List<Animal> animals = new List<Animal>();
-    private readonly List<IInventory> inventoryItems = new List<IInventory>();
-    private readonly IVeterinaryClinic vetClinic;
+    private readonly List<Animal> _animals = new();
+    private readonly List<IInventory> _inventoryItems = new();
 
-    public Zoo(IVeterinaryClinic vetClinic)
-    {
-        this.vetClinic = vetClinic;
-    }
-    
     public void AddAnimal(Animal animal)
     {
-        if (animals.Any(a => a.Number == animal.Number))
+        if (_animals.Any(a => a.Number == animal.Number))
         {
             Console.WriteLine($"Животное с номером {animal.Number} уже в зоопарке!");
             return;
@@ -33,36 +27,33 @@ public class Zoo : IZoo
             return;
         }
 
-        animals.Add(animal);
-        inventoryItems.Add(animal);
+        _animals.Add(animal);
+        _inventoryItems.Add(animal);
         Console.WriteLine($"Животное {animal.Name} успешно принято в зоопарк.");
     }
 
-    public IEnumerable<Animal> GetAnimals() => animals;
-    public uint GetTotalFoodRequirement() => (uint)animals.Sum(a => a.Food);
+    public IEnumerable<Animal> GetAnimals() => _animals.AsReadOnly();
+    public uint GetTotalFoodRequirement() => (uint)_animals.Sum(a => a.Food);
     
     public IEnumerable<Animal> GetContactZooAnimals() =>
-        animals.Where(a => a is Herbo herbivore && herbivore.Kindness > 5);
+        _animals.Where(a => a is Herbo { Kindness: > 5 }).ToList().AsReadOnly();
     
     public void ShowInventory()
     {
         Console.WriteLine("\nИнвентаризационные объекты зоопарка:");
-        foreach (var item in inventoryItems)
+        foreach (var item in _inventoryItems)
         {
-            switch (item)
-            {
-                case Thing thing:
-                    Console.WriteLine($"Вещь: {thing.Name}, инвентарный номер: {thing.Number}");
-                    break;
-                case Animal animal:
-                    Console.WriteLine($"Животное: {animal.Name}, инвентарный номер: {animal.Number}");
-                    break;
-                default:
-                    Console.WriteLine($"Неизвестный тип инвентаря: {item.GetType().Name}");
-                    break;
-            }
+            item.ShowInventoryInfo();
         }
     }
 
-    public void AddInventoryItem(IInventory item) => inventoryItems.Add(item);
+    public void AddInventoryThing(Thing item)
+    {
+        if (_inventoryItems.Any(a => a.Number == item.Number))
+        {
+            throw new ArgumentException("Инвентарь с данным номером уже существует!");
+        }
+        _inventoryItems.Add(item);
+        Console.WriteLine($"Предмет {item.Name} был добавлен в инвентарь!");
+    }
 }

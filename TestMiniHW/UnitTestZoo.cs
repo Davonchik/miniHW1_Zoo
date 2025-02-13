@@ -84,7 +84,7 @@ public class UnitTestZoo
             zoo.AddAnimal(rabbit);
 
             var table = new Thing(8, "tableB");
-            zoo.AddInventoryItem(table);
+            zoo.AddInventoryThing(table);
 
             using (var sw = new StringWriter())
             {
@@ -101,6 +101,20 @@ public class UnitTestZoo
                 Assert.Contains("tig", output);
                 Assert.Contains("rab", output);
             }
+        }
+
+        [Fact]
+        public void AddInventoryThingWithDuplicatedNum_ShouldThrowException()
+        {
+            // Arrange
+            IVeterinaryClinic clinic = new VeterinaryClinic();
+            IZoo zoo = new Zoo(clinic);
+            var table = new Table(1, "table");
+            var computer = new Computer(1, "comp");
+            zoo.AddInventoryThing(table);
+            
+            // Act && Assert
+            Assert.Throws<ArgumentException>(() => zoo.AddInventoryThing(computer));
         }
 
         [Fact]
